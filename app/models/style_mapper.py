@@ -1,5 +1,6 @@
 from typing import Dict, List, Pattern
 import re
+from app.utils.logger import get_logger
 
 
 class StyleMapper:
@@ -8,6 +9,7 @@ class StyleMapper:
     """
     
     def __init__(self):
+        self.logger = get_logger(__name__)
         self.russian_headings = [
             'Заголовок №1', 'Заголовок №2', 'Заголовок №3', 
             'Заголовок №4', 'Заголовок №5', 'Заголовок №6'
@@ -21,6 +23,11 @@ class StyleMapper:
             'Другое': 'other',
             'None': 'default'
         }
+        
+        self.logger.debug("StyleMapper инициализирован",
+                         headings_count=len(self.russian_headings),
+                         text_styles_count=len(self.text_styles),
+                         special_styles_count=len(self.special_styles))
     
     def create_style_mapping(self) -> str:
         """
@@ -60,7 +67,10 @@ class StyleMapper:
             "p[style-name='Normal'] => p:fresh"
         ])
         
-        return "\n".join(mappings)
+        style_map = "\n".join(mappings)
+        self.logger.debug("Создана карта стилей", 
+                         mappings_count=len(mappings))
+        return style_map
     
     def analyze_style_warnings(self, warnings: List[str]) -> Dict[str, List[str]]:
         """
@@ -72,6 +82,9 @@ class StyleMapper:
         Returns:
             Словарь с категоризированными предупреждениями
         """
+        self.logger.debug("Анализ предупреждений о стилях", 
+                         warnings_count=len(warnings))
+        
         categorized = {
             'undefined_styles': [],
             'unrecognized_styles': [],
@@ -92,6 +105,11 @@ class StyleMapper:
                     categorized['missing_elements'].append(warning)
             else:
                 categorized['other_warnings'].append(warning)
+        
+        self.logger.debug("Анализ завершен",
+                         undefined_styles=len(categorized['undefined_styles']),
+                         unrecognized_styles=len(categorized['unrecognized_styles']),
+                         missing_elements=len(categorized['missing_elements']))
         
         return categorized
     

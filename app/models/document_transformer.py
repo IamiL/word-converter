@@ -1,6 +1,7 @@
 import mammoth
 import mammoth.transforms
 from typing import Any
+from app.utils.logger import get_logger
 
 
 class DocumentTransformer:
@@ -9,10 +10,14 @@ class DocumentTransformer:
     """
     
     def __init__(self):
+        self.logger = get_logger(__name__)
         self.undefined_style_ids = [
             'Style2', 'Style4', 'Style18', '20', '1', 'a9', 
             'ab', '24', '11', '30'
         ]
+        
+        self.logger.debug("DocumentTransformer инициализирован",
+                         undefined_styles_count=len(self.undefined_style_ids))
     
     def create_transform_function(self):
         """
